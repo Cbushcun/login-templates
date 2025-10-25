@@ -24,17 +24,24 @@ export function SignupForm({ ...props }) {
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<form>
+				<form action="/api/auth/register" method="POST">
 					<FieldGroup>
 						<Field>
-							<FieldLabel htmlFor="name">Full Name</FieldLabel>
-							<Input id="name" type="text" placeholder="John Doe" required />
+							<FieldLabel htmlFor="name">Username</FieldLabel>
+							<Input
+								id="name"
+								type="text"
+								name="username"
+								placeholder="Johndoe42"
+								required
+							/>
 						</Field>
 						<Field>
 							<FieldLabel htmlFor="email">Email</FieldLabel>
 							<Input
 								id="email"
 								type="email"
+								name="email"
 								placeholder="m@example.com"
 								required
 							/>
@@ -45,7 +52,7 @@ export function SignupForm({ ...props }) {
 						</Field>
 						<Field>
 							<FieldLabel htmlFor="password">Password</FieldLabel>
-							<Input id="password" type="password" required />
+							<Input id="password" type="password" name="password" required />
 							<FieldDescription>
 								Must be at least 8 characters long.
 							</FieldDescription>

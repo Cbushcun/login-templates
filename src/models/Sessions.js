@@ -4,6 +4,11 @@ const { Schema, models, model } = mongoose;
 
 const sessionSchema = new Schema(
 	{
+		userId: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "User",
+			required: true,
+		},
 		tokenId: {
 			type: String,
 			required: true,
@@ -21,10 +26,15 @@ const sessionSchema = new Schema(
 			type: String,
 			required: true,
 		},
-		userAgent: {
+		role: {
 			type: String,
 			enum: ["user", "admin"],
 			default: "user",
+		},
+		userAgent: {
+			type: String,
+			required: true,
+			default: "Unknown",
 		},
 		expiresAt: {
 			type: Date,
