@@ -26,14 +26,15 @@ export function LoginForm({ className, ...props }) {
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<form>
+					<form action="/api/auth/login" method="POST">
 						<FieldGroup>
 							<Field>
 								<FieldLabel htmlFor="email">Email</FieldLabel>
 								<Input
 									id="email"
 									type="email"
-									placeholder="example@mail.com"
+									name="email"
+									placeholder="example@email.com"
 									required
 								/>
 							</Field>
@@ -47,7 +48,13 @@ export function LoginForm({ className, ...props }) {
 										Forgot your password?
 									</a>
 								</div>
-								<Input id="password" type="password" required />
+								<Input
+									id="password"
+									type="password"
+									name="password"
+									minLength="8"
+									required
+								/>
 							</Field>
 							<Field>
 								<Button type="submit">Login</Button>

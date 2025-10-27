@@ -1,3 +1,7 @@
+/**
+ * @description User Registration API Route.
+ */
+// /src/app/api/auth/register/route.js
 import { connectDB } from "@/lib/db";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
@@ -6,15 +10,14 @@ import Session from "@/models/Sessions";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 
-export async function POST(request) {
+export async function POST(req) {
 	try {
 		await connectDB();
 
-		const formData = await request.formData();
+		const formData = await req.formData();
 		const username = formData.get("username")?.toString().trim();
 		const email = formData.get("email")?.toString().trim().toLowerCase();
 		const password = formData.get("password")?.toString();
-		console.log(formData);
 
 		if (!username || !email || !password) {
 			return NextResponse.json(
@@ -38,31 +41,15 @@ export async function POST(request) {
 			password: hashedPassword,
 		});
 		await newUser.save();
-		const sessionId = uuidv4();
-		const refreshToken = jwt.sign(
-			{ userId: newUser._id, sessionId },
-			process.env.JWT_SECRET,
-			{
-				expiresIn: "7d",
-			}
-		);
-		const newSession = new Session({
-			sessionId,
-			userId: newUser._id,
-			refreshToken,
-			ipAddress: request.ip || "Unknown",
-			userAgent: request.headers.get("user-agent") || "Unknown",
-			role: newUser.role,
-		});
-		await newSession.save();
-		return NextResponse.json(
+		return NextResponse.redirect(new URL("/login", req.url));
+		/* return NextResponse.json(
 			{ message: "User registered successfully." },
 			{ status: 201 }
-		);
+		); */
 	} catch (error) {
 		console.error("Registration error:", error);
 		return NextResponse.json(
-			{ error: "Internal Server Error: " + error.message },
+			{ error: "Internal Server Error. Please try again later." },
 			{ status: 500 }
 		);
 	}

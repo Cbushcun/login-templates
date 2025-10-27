@@ -1,19 +1,18 @@
 import mongoose from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 
 const { Schema, models, model } = mongoose;
 
 const sessionSchema = new Schema(
 	{
+		_id: {
+			type: String,
+			required: true,
+		},
 		userId: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
 			required: true,
-		},
-		tokenId: {
-			type: String,
-			required: true,
-			unique: true,
-			trim: true,
 		},
 		refreshToken: {
 			type: String,
@@ -35,6 +34,11 @@ const sessionSchema = new Schema(
 			type: String,
 			required: true,
 			default: "Unknown",
+		},
+		role: {
+			type: String,
+			enum: ["user", "admin"],
+			default: "user",
 		},
 		expiresAt: {
 			type: Date,
