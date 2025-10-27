@@ -56,7 +56,7 @@ export async function POST(req) {
 		});
 		await newSession.save();
 
-		const res = NextResponse.json("Login successful.", { status: 200 });
+		const res = NextResponse.redirect(new URL("/profile", req.url));
 		res.cookies.set("accessToken", accessToken, {
 			httpOnly: true,
 			secure: process.env.PRODUCTION,
