@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Session from "@/models/Sessions";
 
 let cached = global.mongoose;
 
@@ -21,4 +22,16 @@ export async function connectDB() {
 
 	cached.conn = await cached.promise; // wait for promise if in progress
 	return cached.conn;
+}
+
+export async function insertSession(_id, userId, refreshToken, req, role) {
+	const newSession = new Session({
+		_id,
+		userId,
+		refreshToken,
+		ipAddress: req.ip || "Unknown",
+		userAgent: req.headers.get("user-agent") || "Unknown",
+		role,
+	});
+	await newSession.save();
 }

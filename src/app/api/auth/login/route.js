@@ -2,13 +2,12 @@
  * @description User login API Route.
  */
 // /src/app/api/auth/login/route.js
-import { connectDB } from "@/lib/db";
+import { connectDB, insertSession } from "@/lib/db";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
-import jwt from "jsonwebtoken";
 import User from "@/models/Users";
-import Session from "@/models/Sessions";
 import { NextResponse } from "next/server";
+import { createToken } from "@/lib/tokens";
 
 export async function POST(req) {
 	await connectDB();
@@ -18,12 +17,14 @@ export async function POST(req) {
 	const password = formData.get("password")?.toString();
 
 	if (!email || !password) {
-		return new Response("Email and password are required.", { status: 400 });
+		return NextResponse.json("Email and password are required.", {
+			status: 400,
+		});
 	}
 
 	const existingUser = await User.findOne({ email });
 	if (!existingUser) {
-		return new Response("Invalid email or password.", { status: 401 });
+		return NextResponse.json("Invalid email or password.", { status: 401 });
 	}
 
 	const isPasswordValid = await bcrypt.compare(password, existingUser.password);
@@ -32,29 +33,23 @@ export async function POST(req) {
 		// Here you would normally create a session or JWT token
 		const sessionId = uuidv4();
 
-		const accessToken = jwt.sign(
+		const accessToken = createToken(
 			{ userId: existingUser._id, sessionId },
-			process.env.JWT_SECRET,
-			{ expiresIn: "15m" }
+			"15m"
 		);
 
-		const refreshToken = jwt.sign(
+		const refreshToken = createToken(
 			{ userId: existingUser._id, sessionId },
-			process.env.JWT_SECRET,
-			{
-				expiresIn: "7d",
-			}
+			"7d"
 		);
 
-		const newSession = new Session({
-			_id: sessionId,
-			userId: existingUser._id,
+		await insertSession(
+			sessionId,
+			existingUser._id,
 			refreshToken,
-			ipAddress: req.ip || "Unknown",
-			userAgent: req.headers.get("user-agent") || "Unknown",
-			role: existingUser.role,
-		});
-		await newSession.save();
+			req,
+			existingUser.role
+		);
 
 		const res = NextResponse.redirect(new URL("/profile", req.url));
 		res.cookies.set("accessToken", accessToken, {
