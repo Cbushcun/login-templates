@@ -22,7 +22,7 @@ export async function proxy(req) {
 				session.refreshToken
 			);
 			const validUser = tokenData.userId === session.userId.toString();
-			if (validToken && validUser) {
+			if (validToken && validUser && session.expiresAt > new Date()) {
 				const newAccessToken = getNewToken(refreshToken);
 				const res = NextResponse.next();
 				res.cookies.set("accessToken", newAccessToken, {
@@ -33,6 +33,10 @@ export async function proxy(req) {
 					path: "/",
 				});
 				return res;
+			} else if (session.expiresAt <= new Date()) {
+				console.log("Refresh token expired");
+				session.delete();
+				const res = NextResponse.json("Unauthorized", { status: 401 });
 			}
 		}
 		res = NextResponse.json("Unauthorized", { status: 401 });
