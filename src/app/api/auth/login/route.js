@@ -7,7 +7,7 @@ import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import User from "@/models/Users";
 import { NextResponse } from "next/server";
-import { createToken } from "@/lib/tokens";
+import { createToken, clearAllTokens } from "@/lib/tokens";
 
 export async function POST(req) {
 	await connectDB();
@@ -30,28 +30,22 @@ export async function POST(req) {
 	const isPasswordValid = await bcrypt.compare(password, existingUser.password);
 
 	if (isPasswordValid) {
-		// Here you would normally create a session or JWT token
 		const sessionId = uuidv4();
-
+		const res = NextResponse.redirect(new URL("/profile", req.url));
 		const accessToken = createToken(
 			{ userId: existingUser._id, sessionId },
 			"15m"
 		);
-
 		const refreshToken = createToken(
 			{ userId: existingUser._id, sessionId },
 			"7d"
 		);
+		const hashedRefreshToken = await bcrypt.hash(refreshToken, 12);
+		const ipAddress = req.ip || "Unknown";
+		const userAgent = req.headers.get("user-agent") || "Unknown";
 
-		await insertSession(
-			sessionId,
-			existingUser._id,
-			refreshToken,
-			req,
-			existingUser.role
-		);
+		clearAllTokens(res);
 
-		const res = NextResponse.redirect(new URL("/profile", req.url));
 		res.cookies.set("accessToken", accessToken, {
 			httpOnly: true,
 			secure: process.env.PRODUCTION,
@@ -68,6 +62,16 @@ export async function POST(req) {
 			path: "/",
 		});
 
+		await insertSession(
+			sessionId,
+			existingUser._id,
+			hashedRefreshToken,
+			ipAddress,
+			userAgent,
+			existingUser.role
+		);
+
 		return res;
 	}
+	return NextResponse.json("Invalid email or password.", { status: 401 });
 }

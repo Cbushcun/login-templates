@@ -6,9 +6,6 @@ import { connectDB } from "@/lib/db";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import User from "@/models/Users";
-import Session from "@/models/Sessions";
-import jwt from "jsonwebtoken";
-import { v4 as uuidv4 } from "uuid";
 
 export async function POST(req) {
 	try {

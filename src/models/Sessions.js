@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 
 const { Schema, models, model } = mongoose;
 
@@ -19,7 +18,6 @@ const sessionSchema = new Schema(
 			required: true,
 			unique: true,
 			trim: true,
-			lowercase: true,
 		},
 		ipAddress: {
 			type: String,

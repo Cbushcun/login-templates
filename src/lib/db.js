@@ -24,14 +24,37 @@ export async function connectDB() {
 	return cached.conn;
 }
 
-export async function insertSession(_id, userId, refreshToken, req, role) {
+export async function insertSession(
+	_id,
+	userId,
+	refreshToken,
+	ipAddress,
+	userAgent,
+	role
+) {
 	const newSession = new Session({
 		_id,
 		userId,
 		refreshToken,
-		ipAddress: req.ip || "Unknown",
-		userAgent: req.headers.get("user-agent") || "Unknown",
+		ipAddress,
+		userAgent,
 		role,
 	});
 	await newSession.save();
+}
+
+export async function getSessionById(id) {
+	try {
+		await connectDB();
+		const session = await Session.findOne({ _id: id });
+		return session;
+	} catch (err) {
+		console.log(err);
+		return null;
+	}
+}
+
+export async function deleteSessionById(id) {
+	const session = await Session.findOne({ _id: id });
+	return await Session.deleteOne({ _id: session._id });
 }
