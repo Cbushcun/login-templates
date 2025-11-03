@@ -1,3 +1,4 @@
+"use client";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -5,8 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react";
 
 export default function ProfilePage({ user }) {
+	const [canEdit, setCanEdit] = useState(false);
 	return (
 		<div className="container mx-auto p-6">
 			{/* Profile Header */}
@@ -15,8 +18,8 @@ export default function ProfilePage({ user }) {
 					<div className="flex items-center space-x-4">
 						<Avatar src="/path/to/avatar.jpg" alt="User Avatar" />
 						<div>
-							<h2 className="text-xl font-semibold">John Doe</h2>
-							<p className="text-sm text-gray-500">Software Engineer</p>
+							<h2 className="text-xl font-semibold">{user.name}</h2>
+							<p className="text-sm text-gray-500">{user.title}</p>
 						</div>
 					</div>
 				</CardHeader>
@@ -42,22 +45,55 @@ export default function ProfilePage({ user }) {
 						<CardContent>
 							<div className="space-y-4">
 								<div>
-									<Label htmlFor="username">Username</Label>
-									<Input id="username" defaultValue="johndoe" />
+									<Label className={"text-gray-500"} htmlFor="username">
+										Username
+									</Label>
+									{canEdit ? (
+										<Input id="username" defaultValue={user.username} />
+									) : (
+										<p>{user.username}</p>
+									)}
 								</div>
 								<div>
-									<Label htmlFor="email">Email</Label>
-									<Input id="email" defaultValue="johndoe@example.com" />
+									<Label className={"text-gray-500"} htmlFor="email">
+										Email
+									</Label>
+									{canEdit ? (
+										<Input id="email" defaultValue={user.email} />
+									) : (
+										<p>{user.email}</p>
+									)}
 								</div>
 								<div>
-									<Label htmlFor="bio">Bio</Label>
-									<Input
-										id="bio"
-										defaultValue="Passionate about coding and technology."
-									/>
+									<Label className={"text-gray-500"} htmlFor="bio">
+										Bio
+									</Label>
+									{canEdit ? (
+										<Input id="bio" defaultValue={user.bio} />
+									) : (
+										<p>{user.bio}</p>
+									)}
 								</div>
 							</div>
-							<Button className="mt-4">Save Changes</Button>
+							{canEdit ? (
+								<Button
+									className="mt-4"
+									onClick={() => {
+										setCanEdit(false);
+									}}
+								>
+									Save Changes
+								</Button>
+							) : (
+								<Button
+									className="mt-4"
+									onClick={() => {
+										setCanEdit(true);
+									}}
+								>
+									Edit
+								</Button>
+							)}
 						</CardContent>
 					</Card>
 				</TabsContent>
@@ -104,7 +140,11 @@ export default function ProfilePage({ user }) {
 									<Input id="language" defaultValue="English" />
 								</div>
 							</div>
-							<Button className="mt-4">Save Preferences</Button>
+							{canEdit ? (
+								<Button className="mt-4">Save Preferences</Button>
+							) : (
+								<Button className="mt-4">Edit</Button>
+							)}
 						</CardContent>
 					</Card>
 				</TabsContent>
