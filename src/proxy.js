@@ -12,6 +12,7 @@ export async function proxy(req) {
 		console.log("Acess token invalid or expired");
 		const refreshToken = req.cookies.get("refreshToken")?.value;
 		const isRefreshTokenValid = verifyToken(refreshToken);
+
 		if (!refreshToken || !isRefreshTokenValid) {
 			return NextResponse.json("Unauthorized", { status: 401 });
 		} else if (isRefreshTokenValid) {
@@ -22,6 +23,7 @@ export async function proxy(req) {
 				session.refreshToken
 			);
 			const validUser = tokenData.userId === session.userId.toString();
+
 			if (validToken && validUser && session.expiresAt > new Date()) {
 				const newAccessToken = getNewToken(refreshToken);
 				const res = NextResponse.next();
