@@ -7,7 +7,8 @@ import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import User from "@/models/Users";
 import { NextResponse } from "next/server";
-import { createToken, clearAllTokens } from "@/lib/tokens";
+import { createToken } from "@/lib/tokens";
+import { cookieParams } from "@/lib/tokens";
 
 export async function POST(req) {
 	await connectDB();
@@ -44,7 +45,8 @@ export async function POST(req) {
 		const ipAddress = req.ip || "Unknown";
 		const userAgent = req.headers.get("user-agent") || "Unknown";
 
-		clearAllTokens(res);
+		res.cookies.set("accessToken", "", { ...cookieParams, maxAge: 0 });
+		res.cookies.set("refreshToken", "", { ...cookieParams, maxAge: 0 });
 
 		res.cookies.set("accessToken", accessToken, {
 			httpOnly: true,

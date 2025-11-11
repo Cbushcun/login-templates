@@ -1,17 +1,12 @@
 import { NextResponse } from "next/server";
 import { verifyToken, getNewToken, getTokenData } from "@/lib/authenticate";
 import { getSessionById } from "@/lib/db";
+import { cookieParams } from "@/lib/tokens";
 import bcrypt from "bcrypt";
 
 export async function proxy(req) {
 	const token = req.cookies.get("accessToken")?.value;
 	const isTokenValid = verifyToken(token);
-	const cookieParams = {
-		httpOnly: true,
-		secure: process.env.NODE_ENV === "production",
-		sameSite: "Strict",
-		path: "/",
-	};
 
 	if (!token || !isTokenValid) {
 		console.log("Access token invalid or expired");
@@ -49,7 +44,8 @@ export async function proxy(req) {
 			}
 		}
 		res = NextResponse.json("Unauthorized", { status: 401 }); //
-		clearAllTokens(res);
+		res.cookies.set("accessToken", "", { ...cookieParams, maxAge: 0 });
+		res.cookies.set("refreshToken", "", { ...cookieParams, maxAge: 0 });
 		return res;
 	}
 	return NextResponse.next();
