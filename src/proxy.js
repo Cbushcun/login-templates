@@ -2,19 +2,29 @@ import { NextResponse } from "next/server";
 import { verifyToken, getNewToken, getTokenData } from "@/lib/authenticate";
 import { getSessionById } from "@/lib/db";
 import bcrypt from "bcrypt";
-import { clearAllTokens } from "./lib/tokens";
 
 export async function proxy(req) {
 	const token = req.cookies.get("accessToken")?.value;
 	const isTokenValid = verifyToken(token);
+	const cookieParams = {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === "production",
+		sameSite: "Strict",
+		path: "/",
+	};
 
 	if (!token || !isTokenValid) {
-		console.log("Acess token invalid or expired");
+		console.log("Access token invalid or expired");
 		const refreshToken = req.cookies.get("refreshToken")?.value;
 		const isRefreshTokenValid = verifyToken(refreshToken);
 
 		if (!refreshToken || !isRefreshTokenValid) {
-			return NextResponse.json("Unauthorized", { status: 401 });
+			console.log("Refresh token invalid or expired");
+			const res = NextResponse.json("Unauthorized", { status: 401 });
+			res.cookies.set("accessToken", "", { ...cookieParams, maxAge: 0 });
+			res.cookies.set("refreshToken", "", { ...cookieParams, maxAge: 0 });
+			console.log(res.cookies);
+			return res;
 		} else if (isRefreshTokenValid) {
 			const tokenData = getTokenData(refreshToken);
 			const session = await getSessionById(tokenData.sessionId);
@@ -28,11 +38,8 @@ export async function proxy(req) {
 				const newAccessToken = getNewToken(refreshToken);
 				const res = NextResponse.next();
 				res.cookies.set("accessToken", newAccessToken, {
-					httpOnly: true,
-					secure: process.env.NODE_ENV === "production",
-					sameSite: "Strict",
+					...cookieParams,
 					maxAge: 15 * 60, // 15 minutes
-					path: "/",
 				});
 				return res;
 			} else if (session.expiresAt <= new Date()) {
@@ -41,7 +48,7 @@ export async function proxy(req) {
 				const res = NextResponse.json("Unauthorized", { status: 401 });
 			}
 		}
-		res = NextResponse.json("Unauthorized", { status: 401 });
+		res = NextResponse.json("Unauthorized", { status: 401 }); //
 		clearAllTokens(res);
 		return res;
 	}
