@@ -45,7 +45,7 @@ export default function ProfilePage({ user }) {
 						<CardContent>
 							<div className="space-y-4">
 								<div>
-									<Label className={"text-gray-500"} htmlFor="username">
+									<Label className={"text-gray-500 mb-1"} htmlFor="username">
 										Username
 									</Label>
 									{canEdit ? (
@@ -55,7 +55,7 @@ export default function ProfilePage({ user }) {
 									)}
 								</div>
 								<div>
-									<Label className={"text-gray-500"} htmlFor="email">
+									<Label className={"text-gray-500 mb-1"} htmlFor="email">
 										Email
 									</Label>
 									{canEdit ? (
@@ -65,7 +65,7 @@ export default function ProfilePage({ user }) {
 									)}
 								</div>
 								<div>
-									<Label className={"text-gray-500"} htmlFor="bio">
+									<Label className={"text-gray-500 mb-1"} htmlFor="bio">
 										Bio
 									</Label>
 									{canEdit ? (
