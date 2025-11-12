@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { verifyToken, getNewToken, getTokenData } from "@/lib/authenticate";
 import { getSessionById } from "@/lib/db";
-import { cookieParams } from "@/lib/tokens";
+import { cookieParams } from "@/lib/tokens"; // Be sure to set maxAge independent of cookieParams
 import bcrypt from "bcrypt";
 
 export async function proxy(req) {

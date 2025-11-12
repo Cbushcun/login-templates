@@ -10,6 +10,7 @@ import { useState } from "react";
 
 export default function ProfilePage({ user }) {
 	const [canEdit, setCanEdit] = useState(false);
+	const toggleEdit = () => setCanEdit(!canEdit);
 	return (
 		<div className="container mx-auto p-6">
 			{/* Profile Header */}
@@ -18,13 +19,35 @@ export default function ProfilePage({ user }) {
 					<div className="flex items-center space-x-4">
 						<Avatar src="/path/to/avatar.jpg" alt="User Avatar" />
 						<div>
-							<h2 className="text-xl font-semibold">{user.name}</h2>
+							<span className="flex items-center gap-2">
+								<h2 className="text-xl font-semibold">{user.name} </h2>
+								<p className="text-red-500 font-medium text-sm">
+									&#9679; Not Verified
+								</p>
+							</span>
 							<p className="text-sm text-gray-500">{user.title}</p>
 						</div>
 					</div>
 				</CardHeader>
 				<CardContent>
-					<Button variant="outline">Edit Profile</Button>
+					{canEdit ? (
+						<Button
+							onClick={() => {
+								toggleEdit();
+							}}
+						>
+							Save
+						</Button>
+					) : (
+						<Button
+							variant="outline"
+							onClick={() => {
+								toggleEdit();
+							}}
+						>
+							Edit Profile
+						</Button>
+					)}
 				</CardContent>
 			</Card>
 
@@ -44,6 +67,24 @@ export default function ProfilePage({ user }) {
 						</CardHeader>
 						<CardContent>
 							<div className="space-y-4">
+								{canEdit ? (
+									<>
+										<div>
+											<Label className={"text-gray-500 mb-1"} htmlFor="name">
+												Name
+											</Label>
+											<Input id="name" defaultValue={user.name} />
+										</div>
+										<div>
+											<Label className={"text-gray-500 mb-1"} htmlFor="title">
+												Title
+											</Label>
+											<Input id="title" defaultValue={user.title}></Input>
+										</div>
+									</>
+								) : (
+									""
+								)}
 								<div>
 									<Label className={"text-gray-500 mb-1"} htmlFor="username">
 										Username
@@ -51,7 +92,7 @@ export default function ProfilePage({ user }) {
 									{canEdit ? (
 										<Input id="username" defaultValue={user.username} />
 									) : (
-										<p>{user.username}</p>
+										<p>{user.username} </p>
 									)}
 								</div>
 								<div>
@@ -59,7 +100,10 @@ export default function ProfilePage({ user }) {
 										Email
 									</Label>
 									{canEdit ? (
-										<Input id="email" defaultValue={user.email} />
+										<p>
+											{user.email}{" "}
+											<i className="text-gray-500">unavailable at this time</i>
+										</p>
 									) : (
 										<p>{user.email}</p>
 									)}
@@ -74,30 +118,45 @@ export default function ProfilePage({ user }) {
 										<p>{user.bio}</p>
 									)}
 								</div>
+								<div>
+									{canEdit ? (
+										<>
+											<Label className={"text-gray-500 mb-1"}>
+												Current Password
+											</Label>
+											<Input
+												id="current-password"
+												type="password"
+												placeholder="••••••••"
+											></Input>
+											<Label className={"text-gray-500 mb-1"}>
+												New Password
+											</Label>
+											<Input
+												id="new-password"
+												type="password"
+												placeholder="••••••••"
+											></Input>
+											<Label className={"text-gray-500 mb-1"}>
+												Confirm New Password
+											</Label>
+											<Input
+												id="new-password-confirm"
+												type="password"
+												placeholder="••••••••"
+											></Input>
+										</>
+									) : (
+										<>
+											<Label className={"text-gray-500 mb-1"}>Password</Label>
+											<p>••••••••</p>
+										</>
+									)}
+								</div>
 							</div>
-							{canEdit ? (
-								<Button
-									className="mt-4"
-									onClick={() => {
-										setCanEdit(false);
-									}}
-								>
-									Save Changes
-								</Button>
-							) : (
-								<Button
-									className="mt-4"
-									onClick={() => {
-										setCanEdit(true);
-									}}
-								>
-									Edit
-								</Button>
-							)}
 						</CardContent>
 					</Card>
 				</TabsContent>
-
 				{/* Account Tab */}
 				<TabsContent value="account">
 					<Card className="mt-4">
