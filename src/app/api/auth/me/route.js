@@ -36,16 +36,11 @@ export async function POST(req) {
 		}
 
 		// Fetch user from database
-		const user = await User.findById(tokenData.userId).select(
-			"-password"
-		);
+		const user = await User.findById(tokenData.userId).select("-password");
 
 		if (!user) {
 			isDev ? console.error("User not found") : "";
-			return NextResponse.json(
-				{ error: "User not found." },
-				{ status: 404 }
-			);
+			return NextResponse.json({ error: "User not found." }, { status: 404 });
 		}
 
 		isDev ? console.log("User data retrieved for:", user.username) : "";

@@ -21,11 +21,24 @@ const userSchema = new Schema(
 			type: String,
 			required: true,
 		},
-		role: {
+			name: {
+				type: String,
+				default: "",
+			},
+			title: {
+				type: String,
+				default: "",
+			},
+			bio: {
+				type: String,
+				default: "",
+			},
 			type: String,
-			enum: ["user", "admin"],
-			default: "user",
-		},
+			role: {
+				type: String,
+				enum: ["user", "admin"],
+				default: "user",
+			},
 		active: {
 			type: Boolean,
 			default: false,

@@ -12,14 +12,14 @@ export default async function Page() {
 		const cookieHeader = headersList.get("cookie") || "";
 		const accessToken = cookieHeader
 			.split("; ")
-			.find(cookie => cookie.startsWith("accessToken="))
+			.find((cookie) => cookie.startsWith("accessToken="))
 			?.split("=")[1];
 
 		const response = await fetch(`${baseUrl}/api/auth/me`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
-				"Cookie": `accessToken=${accessToken}`,
+				Cookie: `accessToken=${accessToken}`,
 			},
 		});
 
