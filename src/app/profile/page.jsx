@@ -1,4 +1,4 @@
-import ProfilePage from "./ProfilePage";
+import ProfilePage from "./profile-page";
 
 export default function Page() {
 	const user = {

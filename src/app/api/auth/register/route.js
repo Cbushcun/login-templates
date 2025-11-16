@@ -9,6 +9,8 @@ import User from "@/models/Users";
 
 export async function POST(req) {
 	try {
+		const isDev = process.env.NODE_ENV === "development";
+
 		await connectDB();
 
 		const formData = await req.formData();
@@ -44,7 +46,7 @@ export async function POST(req) {
 			{ status: 201 }
 		); */
 	} catch (error) {
-		console.error("Registration error:", error);
+		isDev ? console.error("Registration error:", error) : "";
 		return NextResponse.json(
 			{ error: "Internal Server Error. Please try again later." },
 			{ status: 500 }
