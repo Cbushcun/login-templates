@@ -76,7 +76,7 @@ export default function ProfilePage({ user }) {
 						<CardContent>
 							<form
 								id="profile-form"
-								action="/api/user/"
+								action="/api/user/update"
 								method="POST"
 								className="space-y-4"
 							>
