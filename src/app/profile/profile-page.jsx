@@ -35,9 +35,20 @@ export default function ProfilePage({ user }) {
 				</CardHeader>
 				<CardContent>
 					{canEdit ? (
-						<Button type="submit" form="profile-form">
-							Save
-						</Button>
+						<div className="flex gap-2">
+							<Button type="submit" form="profile-form">
+								Save
+							</Button>
+							<Button
+								type="button"
+								variant="outline"
+								onClick={() => {
+									toggleEdit();
+								}}
+							>
+								Cancel
+							</Button>
+						</div>
 					) : (
 						<Button
 							variant="outline"
