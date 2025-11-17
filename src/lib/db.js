@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Session from "@/models/Sessions";
 
+const isDev = process.env.NODE_ENV === "development";
 let cached = global.mongoose;
 
 if (!cached) {
@@ -32,29 +33,43 @@ export async function insertSession(
 	userAgent,
 	role
 ) {
-	const newSession = new Session({
-		_id,
-		userId,
-		refreshToken,
-		ipAddress,
-		userAgent,
-		role,
-	});
-	await newSession.save();
+	try {
+		await connectDB();
+		const newSession = new Session({
+			_id,
+			userId,
+			refreshToken,
+			ipAddress,
+			userAgent,
+			role,
+		});
+		await newSession.save();
+	} catch (err) {
+		isDev ? console.log("Error inserting session:", err) : null;
+		return null;
+	}
 }
 
 export async function getSessionById(id) {
 	try {
 		await connectDB();
-		const session = await Session.findOne({ _id: id });
+		const session = await Session.findById(id).select(
+			"-refreshToken -_id -ipAddress -userAgent -role -__v -createdAt"
+		);
 		return session;
 	} catch (err) {
-		console.log(err);
+		isDev ? console.log("Error obtaining session by ID:", err) : null;
 		return null;
 	}
 }
 
 export async function deleteSessionById(id) {
-	const session = await Session.findOne({ _id: id });
-	return await Session.deleteOne({ _id: session._id });
+	try {
+		await connectDB();
+		const session = await Session.findByIdAndDelete(id);
+		return session;
+	} catch (err) {
+		isDev ? console.log("Error deleting session by ID:", err) : null;
+		return null;
+	}
 }
