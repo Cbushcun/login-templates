@@ -25,7 +25,7 @@ export async function POST(req) {
 			);
 		}
 
-		const existingUser = await User.findOne({ email });
+		const existingUser = await User.findOne({ email }).select("_id");
 		if (existingUser) {
 			return NextResponse.json(
 				{ error: "Email is already registered." },
