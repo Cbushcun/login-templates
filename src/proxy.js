@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
 import { regenerateJwt, getJwtData } from "@/lib/tokens";
-import { verifyJwt } from "@/lib/authenticate";
+import { validateJwt } from "@/lib/authenticate";
 import { getSessionById } from "@/lib/db";
 import { cookieParams } from "@/lib/cookies"; // Be sure to set maxAge independent of cookieParams
 import bcrypt from "bcrypt";
 
 export async function proxy(req) {
 	const token = req.cookies.get("accessToken")?.value;
-	const isTokenValid = verifyJwt(token);
+	const isTokenValid = validateJwt(token);
 
 	if (!token || !isTokenValid) {
 		console.log("Access token invalid or expired");
 		const refreshToken = req.cookies.get("refreshToken")?.value;
-		const isRefreshTokenValid = verifyJwt(refreshToken);
+		const isRefreshTokenValid = validateJwt(refreshToken);
 
 		if (!refreshToken || !isRefreshTokenValid) {
 			console.log("Refresh token invalid or expired");
