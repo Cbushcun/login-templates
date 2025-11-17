@@ -7,8 +7,8 @@ import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import User from "@/models/Users";
 import { NextResponse } from "next/server";
-import { createToken } from "@/lib/tokens";
-import { cookieParams } from "@/lib/tokens";
+import { createJwt } from "@/lib/tokens";
+import { cookieParams } from "@/lib/cookies";
 
 export async function POST(req) {
 	await connectDB();
@@ -33,11 +33,11 @@ export async function POST(req) {
 	if (isPasswordValid) {
 		const sessionId = uuidv4();
 		const res = NextResponse.redirect(new URL("/profile", req.url));
-		const accessToken = createToken(
+		const accessToken = createJwt(
 			{ userId: existingUser._id, sessionId },
 			"15m"
 		);
-		const refreshToken = createToken(
+		const refreshToken = createJwt(
 			{ userId: existingUser._id, sessionId },
 			"7d"
 		);

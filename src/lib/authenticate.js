@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { createToken } from "./tokens.js";
+import { createJwt } from "./tokens.js";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -33,7 +33,7 @@ export function getNewToken(token) {
 			ignoreExpiration: true,
 		});
 		isDev ? console.log("Generating new token") : "";
-		const newToken = createToken(
+		const newToken = createJwt(
 			{ userId: decoded.userId, sessionId: decoded.sessionId },
 			"15m"
 		);
