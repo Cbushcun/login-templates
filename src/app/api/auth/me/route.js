@@ -5,7 +5,7 @@
 import { connectDB } from "@/lib/db";
 import { NextResponse } from "next/server";
 import User from "@/models/Users";
-import { getTokenData } from "@/lib/authenticate";
+import { getJwtData } from "@/lib/tokens";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -25,7 +25,7 @@ export async function POST(req) {
 		}
 
 		// Decode token to get userId
-		const tokenData = getTokenData(accessToken);
+		const tokenData = getJwtData(accessToken);
 
 		if (!tokenData || !tokenData.userId) {
 			isDev ? console.error("Invalid token data") : "";

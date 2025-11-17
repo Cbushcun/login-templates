@@ -1,17 +1,18 @@
 import { NextResponse } from "next/server";
-import { verifyToken, getNewToken, getTokenData } from "@/lib/authenticate";
+import { regenerateJwt, getJwtData } from "@/lib/tokens";
+import { verifyJwt } from "@/lib/authenticate";
 import { getSessionById } from "@/lib/db";
 import { cookieParams } from "@/lib/cookies"; // Be sure to set maxAge independent of cookieParams
 import bcrypt from "bcrypt";
 
 export async function proxy(req) {
 	const token = req.cookies.get("accessToken")?.value;
-	const isTokenValid = verifyToken(token);
+	const isTokenValid = verifyJwt(token);
 
 	if (!token || !isTokenValid) {
 		console.log("Access token invalid or expired");
 		const refreshToken = req.cookies.get("refreshToken")?.value;
-		const isRefreshTokenValid = verifyToken(refreshToken);
+		const isRefreshTokenValid = verifyJwt(refreshToken);
 
 		if (!refreshToken || !isRefreshTokenValid) {
 			console.log("Refresh token invalid or expired");
@@ -21,7 +22,7 @@ export async function proxy(req) {
 			console.log(res.cookies);
 			return res;
 		} else if (isRefreshTokenValid) {
-			const tokenData = getTokenData(refreshToken);
+			const tokenData = getJwtData(refreshToken);
 			const session = await getSessionById(tokenData.sessionId);
 			const validToken = await bcrypt.compare(
 				refreshToken,
@@ -30,7 +31,7 @@ export async function proxy(req) {
 			const validUser = tokenData.userId === session.userId.toString();
 
 			if (validToken && validUser && session.expiresAt > new Date()) {
-				const newAccessToken = getNewToken(refreshToken);
+				const newAccessToken = regenerateJwt(refreshToken);
 				const res = NextResponse.next();
 				res.cookies.set("accessToken", newAccessToken, {
 					...cookieParams,
