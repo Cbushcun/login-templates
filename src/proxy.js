@@ -23,7 +23,7 @@ export async function proxy(req) {
 			return res;
 		} else if (isRefreshTokenValid) {
 			const tokenData = getJwtData(refreshToken);
-			const session = await getSessionById(tokenData.sessionId);
+			const session = (await getSessionById(tokenData.sessionId)).session;
 			const validToken = await bcrypt.compare(
 				refreshToken,
 				session.refreshToken
