@@ -25,6 +25,11 @@ export async function connectDB() {
 	return cached.conn;
 }
 
+/*--------------------------------------
+ * Create functions
+ *--------------------------------------
+ */
+
 export async function insertSession(
 	_id,
 	userId,
@@ -44,32 +49,70 @@ export async function insertSession(
 			role,
 		});
 		await newSession.save();
+		isDev ? console.log("Inserted new session: ", newSession._id) : null;
+		return { success: true, session: newSession._id };
 	} catch (err) {
 		isDev ? console.log("Error inserting session:", err) : null;
-		return null;
+		return { success: false, session: null };
 	}
 }
 
+export async function registerUser(username, email, hashedPassword) {
+	try {
+		await connectDB();
+		const existingEmail = await User.exists({ email });
+		const existingUsername = await User.exists({ username });
+		if (existingEmail || existingUsername)
+			throw new Error("User already exists");
+		const newUser = new User({
+			username,
+			email,
+			password: hashedPassword,
+		});
+		await newUser.save();
+		isDev ? console.log("Registered new user: ", newUser._id) : null;
+		return { success: true, user: newUser._id };
+	} catch (err) {
+		isDev ? console.log("Error registering user:", err) : null;
+		return { success: false, user: null };
+	}
+}
+
+/*--------------------------------------
+ * Read functions
+ *--------------------------------------
+ */
 export async function getSessionById(id) {
 	try {
 		await connectDB();
 		const session = await Session.findById(id).select(
-			"-refreshToken -_id -ipAddress -userAgent -role -__v -createdAt"
+			"-_id -role -__v -createdAt"
 		);
-		return session;
+		isDev ? console.log("Obtained session by ID:", id) : null;
+		return { success: true, session };
 	} catch (err) {
 		isDev ? console.log("Error obtaining session by ID:", err) : null;
 		return null;
 	}
 }
 
+/*--------------------------------------
+ * Update functions
+ *--------------------------------------
+ */
+
+/*--------------------------------------
+ * Delete functions
+ *--------------------------------------
+ */
 export async function deleteSessionById(id) {
 	try {
 		await connectDB();
 		const session = await Session.findByIdAndDelete(id);
-		return session;
+		isDev ? console.log("Deleted session by ID:", id) : null;
+		return { success: true, session: session._id };
 	} catch (err) {
 		isDev ? console.log("Error deleting session by ID:", err) : null;
-		return null;
+		return { success: false, session: null };
 	}
 }

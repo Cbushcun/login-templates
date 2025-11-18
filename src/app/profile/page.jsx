@@ -16,7 +16,7 @@ export default async function Page() {
 			?.split("=")[1];
 
 		const response = await fetch(`${baseUrl}/api/auth/me`, {
-			method: "POST",
+			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
 				Cookie: `accessToken=${accessToken}`,

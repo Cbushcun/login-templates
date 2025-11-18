@@ -4,6 +4,7 @@
 // /src/app/api/auth/register/route.js
 import { connectDB } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { registerUser } from "@/lib/db";
 import bcrypt from "bcrypt";
 import User from "@/models/Users";
 
@@ -33,20 +34,14 @@ export async function POST(req) {
 			);
 		}
 		const hashedPassword = await bcrypt.hash(password, 12);
-
-		const newUser = new User({
-			username,
-			email,
-			password: hashedPassword,
-		});
-		await newUser.save();
+		await registerUser(username, email, hashedPassword);
 		return NextResponse.redirect(new URL("/login", req.url));
 		/* return NextResponse.json(
 			{ message: "User registered successfully." },
 			{ status: 201 }
 		); */
 	} catch (error) {
-		isDev ? console.error("Registration error:", error) : "";
+		isDev ? console.error("Registration error:", error) : null;
 		return NextResponse.json(
 			{ error: "Internal Server Error. Please try again later." },
 			{ status: 500 }

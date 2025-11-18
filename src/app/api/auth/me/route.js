@@ -9,7 +9,7 @@ import { getJwtData } from "@/lib/tokens";
 
 const isDev = process.env.NODE_ENV === "development";
 
-export async function POST(req) {
+export async function GET(req) {
 	try {
 		await connectDB();
 
@@ -17,7 +17,7 @@ export async function POST(req) {
 		const accessToken = req.cookies.get("accessToken")?.value;
 
 		if (!accessToken) {
-			isDev ? console.error("No access token provided") : "";
+			isDev ? console.error("No access token provided") : null;
 			return NextResponse.json(
 				{ error: "Unauthorized. No token provided." },
 				{ status: 401 }
@@ -28,7 +28,7 @@ export async function POST(req) {
 		const tokenData = getJwtData(accessToken);
 
 		if (!tokenData || !tokenData.userId) {
-			isDev ? console.error("Invalid token data") : "";
+			isDev ? console.error("Invalid token data") : null;
 			return NextResponse.json(
 				{ error: "Unauthorized. Invalid token." },
 				{ status: 401 }
@@ -39,11 +39,11 @@ export async function POST(req) {
 		const user = await User.findById(tokenData.userId).select("-password");
 
 		if (!user) {
-			isDev ? console.error("User not found") : "";
+			isDev ? console.error("User not found") : null;
 			return NextResponse.json({ error: "User not found." }, { status: 404 });
 		}
 
-		isDev ? console.log("User data retrieved for:", user.username) : "";
+		isDev ? console.log("User data retrieved for:", user.username) : null;
 
 		return NextResponse.json({
 			user: {
@@ -58,7 +58,7 @@ export async function POST(req) {
 			},
 		});
 	} catch (error) {
-		isDev ? console.error("Auth me error:", error) : "";
+		isDev ? console.error("Auth me error:", error) : null;
 		return NextResponse.json(
 			{ error: "Internal Server Error. Please try again later." },
 			{ status: 500 }
