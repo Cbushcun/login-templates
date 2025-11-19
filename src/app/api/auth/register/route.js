@@ -8,10 +8,10 @@ import { registerUser } from "@/lib/db";
 import bcrypt from "bcrypt";
 import User from "@/models/Users";
 
+const isDev = process.env.NODE_ENV === "development";
+
 export async function POST(req) {
 	try {
-		const isDev = process.env.NODE_ENV === "development";
-
 		await connectDB();
 
 		const formData = await req.formData();
