@@ -2,7 +2,7 @@
  * @description User information retrieval API Route.
  */
 // /src/app/api/auth/me/route.js
-import { connectDB } from "@/lib/db";
+
 import { NextResponse } from "next/server";
 import User from "@/models/Users";
 import { getJwtData } from "@/lib/tokens";
@@ -11,8 +11,6 @@ const isDev = process.env.NODE_ENV === "development";
 
 export async function GET(req) {
 	try {
-		await connectDB();
-
 		// Extract accessToken from cookies
 		const accessToken = req.cookies.get("accessToken")?.value;
 

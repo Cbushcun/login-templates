@@ -2,18 +2,16 @@
  * @description User Registration API Route.
  */
 // /src/app/api/auth/register/route.js
-import { connectDB } from "@/lib/db";
+
 import { NextResponse } from "next/server";
 import { registerUser } from "@/lib/db";
 import bcrypt from "bcrypt";
 import User from "@/models/Users";
 
 export async function POST(req) {
+	const isDev = process.env.NODE_ENV === "development";
+
 	try {
-		const isDev = process.env.NODE_ENV === "development";
-
-		await connectDB();
-
 		const formData = await req.formData();
 		const username = formData.get("username")?.toString().trim();
 		const email = formData.get("email")?.toString().trim().toLowerCase();

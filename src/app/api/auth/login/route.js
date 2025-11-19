@@ -2,8 +2,7 @@
  * @description User login API Route.
  */
 // /src/app/api/auth/login/route.js
-import { connectDB, insertSession } from "@/lib/db";
-import { database as db } from "@/lib/db";
+import { insertSession } from "@/lib/db";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import User from "@/models/Users";
@@ -14,8 +13,6 @@ import { cookieParams } from "@/lib/cookies";
 const isDev = process.env.NODE_ENV === "development";
 
 export async function POST(req) {
-	await connectDB();
-
 	const formData = await req.formData();
 	const email = formData.get("email")?.toString().trim().toLowerCase();
 	const password = formData.get("password")?.toString();
@@ -31,16 +28,7 @@ export async function POST(req) {
 		return NextResponse.json("Invalid email or password.", { status: 401 });
 	}
 
-	try {
-		const loginSuccess = await db.authenticateLogin(email, password).success;
-		isDev ? console.log("Login attempt for: ", email) : null;
-	} catch (err) {
-		return NextResponse.json("Internal Server Error. Please try again later.", {
-			status: 500,
-		});
-	}
-
-	// implement logic for successful login using db class
+	isDev ? console.log("Login attempt for: ", email) : null;
 
 	const isPasswordValid = await bcrypt.compare(password, existingUser.password);
 
