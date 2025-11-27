@@ -3,7 +3,6 @@
  */
 // /src/app/api/auth/login/route.js
 import { connectDB, insertSession } from "@/lib/db";
-import { database as db } from "@/lib/db";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import User from "@/models/Users";

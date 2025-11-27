@@ -23,10 +23,6 @@ export default async function Page() {
 			},
 		});
 
-		if (!response.ok) {
-			throw new Error("Failed to fetch user data");
-		}
-
 		const data = await response.json();
 		const user = data.user;
 

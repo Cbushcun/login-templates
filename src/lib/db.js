@@ -1,10 +1,8 @@
 import mongoose from "mongoose";
 import Session from "@/models/Sessions";
 import User from "@/models/Users";
-import bcrypt from "bcryptjs";
 
 const isDev = process.env.NODE_ENV === "development";
-
 
 export async function connectDB() {
 	let cached = global.mongoose;
@@ -13,25 +11,23 @@ export async function connectDB() {
 		isDev ? console.log("No cached database connection") : null;
 		cached = global.mongoose = { conn: null, promise: null };
 	}
-	
-	if (cached.conn){
+
+	if (cached.conn) {
 		isDev ? console.log("Cached database connection retrieved") : null;
 		return cached.conn; // return existing connection
 	}
-	
+
 	if (!cached.promise) {
 		// Create a new connection promise
-		isDev ? console.log("Establishing databas connection") : null;
+		isDev ? console.log("Establishing database connection") : null;
 		cached.promise = mongoose
-			.connect(process.env.MONGO_URI, {
-				useNewUrlParser: true,
-				useUnifiedTopology: true,
-			})
+			.connect(process.env.MONGO_URI)
 			.then((mongoose) => {
 				isDev ? console.log("Sucessfully connected to database") : null;
 				return mongoose;
-			}).catch((err) => {
-				isDev ? console.log("Databae connection error: " , err) : null;
+			})
+			.catch((err) => {
+				isDev ? console.log("Databae connection error: ", err) : null;
 			});
 	}
 
